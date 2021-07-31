@@ -9,7 +9,6 @@ module Actions
     prompt = TTY::Prompt.new
     puts "#{message}"
     @role_select = prompt.multi_select("Select as many roles as you want don't be shy. Selected roles:", Roles)
-    @texts = []
     system('clear')
     menu
   end
@@ -20,10 +19,10 @@ module Actions
     text_array = [
       "Hey #{@name}, don't you think Mondays should stop existing?",
       "Hey #{@name}, the only good thing Tuesday does is make you feel proud about surviving Monday.",
-      "Its Wedneday #{@name}, you are half way there don't worry. Keeping hustling.",
+      "Its Wednesday #{@name}, you are half way there don't worry. Keeping hustling.",
       "Its just another boring Thrusday #{@name}.",
       "Woaah, please tell me you are gonna party hard today #{@name}. You totally deserve it.",
-      "Its a sin to even get out of your bed on Saturday #{@name}.",
+      "Its cardinal sin to even get out of your bed on Saturday #{@name}.",
       "Sunday. Funday. #{@name} day."
     ]
     return text_array[day-1]
@@ -46,17 +45,18 @@ module Actions
     array = create_action_array
     array.append("Exit the program")
     value = text_actions_prompt.select("Actions", array)
-    if value == "Edit an entry"
+    case value
+    when "Edit an entry"
       edit
-    elsif value == "Delete an entry"
+    when "Delete an entry"
       delete
-    elsif value == "Create a new entry"
+    when "Create a new entry"
       create
-    elsif value == "Edit my roles"
+    when "Edit my roles"
       select_roles
-    elsif value == "Exit the program"
+    when "Exit the program"
       exit_the_program
-    elsif 
+    else
       puts "Something wrong has occured. Please let sayan know his coding skills need work, so does this app."
     end
   end
@@ -101,14 +101,16 @@ module Actions
 
     if @role_select.include? "Admin"
       array.append(create_text) unless array.include? create_text
-      array.append(edit_text) unless array.include? edit_text && @texts == []
-      array.append(delete_text) unless array.include? delete_text && @texts == []
+      if !@texts.empty?
+        array.append(edit_text) unless array.include? edit_text
+        array.append(delete_text) unless array.include? delete_text
+      end
     end
-    if @role_select.include? "Shark"
-      array.append(delete_text) unless array.include? delete_text && @texts == []
+    if @role_select.include? "Shark" && !@texts.empty?
+      array.append(delete_text) unless array.include? delete_text
     end
-    if @role_select.include? "Pirate"
-      array.append(edit_text) unless array.include? edit_text && @texts == []
+    if @role_select.include? "Pirate" && !@texts.empty?
+      array.append(edit_text) unless array.include? edit_text
     end
     return array
   end
